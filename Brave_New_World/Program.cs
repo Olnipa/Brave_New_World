@@ -9,7 +9,7 @@
             bool isAlive = true;
             int cycleWhile = 0;
             int updateMapCycle = 0;
-            int gameSpeed = 70;
+            int gameSpeed = -1;
             int characterPositionX = 2;
             int characterPositionY = 2;
             char whole = '#';
@@ -20,14 +20,37 @@
             char[,] map = GenerateMap(whole, enemyA, levelUp);
 
             Console.SetCursorPosition(0, 0);
+            Console.WriteLine("Help Mr. Zero grow to the Nine.\n" +
+                "You need to eat \"1\" for growing. Use Up and Down Arrow keys for contol.\nPress any key to start...");
+            Console.ReadKey(true);
+            Console.WriteLine("\nChoose difficulty level:\n1 - Child\n2 - Advanced\n3 - Pro-Gamer\n4 - Impossible");
+
+            while (gameSpeed == -1)
+            {
+                switch (Console.ReadKey(true).Key)
+                {
+                    case ConsoleKey.D1:
+                        gameSpeed = 100;
+                        break;
+                    case ConsoleKey.D2:
+                        gameSpeed = 60;
+                        break;
+                    case ConsoleKey.D3:
+                        gameSpeed = 45;
+                        break;
+                    case ConsoleKey.D4:
+                        gameSpeed = 4;
+                        break;
+                }
+            }
+
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
 
             DrawMap(map);
             DrawCharacter(characterView, characterPositionX, characterPositionY);
 
-            Console.SetCursorPosition(0, 7);
-            Console.WriteLine("Use Up and Down Arrow keys for contol.\nPress any key to start...");
-            Console.ReadKey(true);
-            Console.Clear();
+            Console.ReadKey();
 
             while (isAlive && characterView != Convert.ToChar(levelToWin))
             {
@@ -36,7 +59,7 @@
                 DrawMap(map);
                 DrawCharacter(characterView, characterPositionX, characterPositionY);
                 ReadMovementKey(ref characterPositionX, characterPositionY, ref map, whole, enemyA, levelUp, ref characterView, ref isAlive, ref gameSpeed);
-                MoveMap(ref map, characterPositionX, characterPositionY, enemyA, levelUp, whole, ref characterView, ref isAlive, ref updateMapCycle, cycleWhile);
+                MoveArray(ref map, characterPositionX, characterPositionY, enemyA, levelUp, whole, ref characterView, ref isAlive, ref updateMapCycle, cycleWhile);
                 CheckPosition(ref characterPositionX, characterPositionY, ref map, whole, enemyA, levelUp, ref characterView, ref isAlive, ref gameSpeed);
 
                 cycleWhile++;
@@ -104,7 +127,7 @@
             Console.BackgroundColor = backgroundColor;
         }
 
-        static void MoveMap(ref char[,] map, int characterPositionX, int characterPositionY, char enemyA, char levelUp, char whole, ref char characterView, ref bool isAlive, ref int updateMapCycle, int cycleWhile)
+        static void MoveArray(ref char[,] map, int characterPositionX, int characterPositionY, char enemyA, char levelUp, char whole, ref char characterView, ref bool isAlive, ref int updateMapCycle, int cycleWhile)
         {
             int cycleForMoveMap = 4;
 
@@ -155,13 +178,16 @@
 
         static void CheckPosition(ref int characterPositionX, int characterPositionY, ref char[,] map, char whole, char enemyA, char levelUp, ref char characterView, ref bool isAlive, ref int gameSpeed)
         {
-            int speedUp = 7;
+            int speedUp = 5;
 
             if (map[characterPositionX, characterPositionY] == levelUp)
             {
                 characterView = Convert.ToChar(Convert.ToInt32(characterView) + 1);
                 map[characterPositionX, characterPositionY] = ' ';
-                gameSpeed -= speedUp;
+                if (gameSpeed > speedUp)
+                {
+                    gameSpeed -= speedUp;
+                }
             }
             else if (map[characterPositionX, characterPositionY] == enemyA)
             {
@@ -184,7 +210,7 @@
         static char[,] GenerateMap(char whole, char enemyA, char levelUp, int i = 0, int j = 0)
         {
             int mapLines = 5;
-            int mapColumns = 30;
+            int mapColumns = 90;
             char[,] map = new char[mapLines, mapColumns];
 
             int mapContentFrequency = 2;
